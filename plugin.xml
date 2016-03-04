@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="cz.raynet.raynetcrm.NotificationService"
+        version="0.0.0">
+
+    <name>NotificationService</name>
+    <description>Notification service phonegap plugin. Can fetch user activity reminders from server and show them via notification.</description>
+
+    <!-- cordova -->
+    <engines>
+        <engine name="cordova" version=">=3.0.0" />
+    </engines>
+
+    <!-- js -->
+    <js-module src="www/notificationService.js" name="NotificationService">
+        <clobbers target="NotificationService" />
+    </js-module>
+
+    <!-- ios -->
+    
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="NotificationService" >
+                <param name="android-package" value="cz.raynet.raynetcrm.NotificationServiceMain"/>
+            </feature>
+        </config-file>
+
+        <config-file target="res/xml/config.xml" parent="/*">
+            <preference name="KeepRunning" value="true" />
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <service android:name="cz.raynet.raynetcrm.NotificationService" />
+
+            <receiver android:name="cz.raynet.raynetcrm.TriggerReceiver" android:exported="false" />
+            <receiver android:name="cz.raynet.raynetcrm.BootCompletedReceiver" android:exported="false" >
+	        <intent-filter>
+	            <action android:name="android.intent.action.BOOT_COMPLETED" />
+                </intent-filter>
+	    </receiver>
+            <activity
+                android:name="cz.raynet.raynetcrm.ClickActivity"
+                android:launchMode="singleInstance"
+                android:theme="@android:style/Theme.NoDisplay"
+                android:exported="false" />
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+	    <uses-permission android:name="android.permission.INTERNET" />
+	    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+	    <uses-permission android:name="android.permission.VIBRATE" />
+        </config-file>
+
+        <lib-file src="libs/android/android-support-v4.jar" />
+	<lib-file src="libs/android/volley-1.0.19.jar" />
+
+        <source-file src="src/android/NotificationServiceMain.java" target-dir="src/cz/raynet/raynetcrm" />        
+	<source-file src="src/android/BootCompletedReceiver.java" target-dir="src/cz/raynet/raynetcrm" />
+        <source-file src="src/android/Manager.java" target-dir="src/cz/raynet/raynetcrm" />
+        <source-file src="src/android/NotificationObj.java" target-dir="src/cz/raynet/raynetcrm" />
+        <source-file src="src/android/NotificationService.java" target-dir="src/cz/raynet/raynetcrm" />
+        <source-file src="src/android/TriggerReceiver.java" target-dir="src/cz/raynet/raynetcrm" />
+	<source-file src="src/android/AssetUtil.java" target-dir="src/cz/raynet/raynetcrm" />
+	<source-file src="src/android/ClickActivity.java" target-dir="src/cz/raynet/raynetcrm" />
+
+ 	<resource-file src="res/drawable-hdpi/notif_reminder.png" target="res/drawable-hdpi/notif_reminder.png" />
+	<resource-file src="res/drawable-hdpi/notif_service.png" target="res/drawable-hdpi/notif_service.png" />
+ 	<resource-file src="res/drawable-hdpi-v11/notif_reminder.png" target="res/drawable-hdpi-v11/notif_reminder.png" />
+	<resource-file src="res/drawable-hdpi-v11/notif_service.png" target="res/drawable-hdpi-v11/notif_service.png" />
+ 	<resource-file src="res/drawable-mdpi/notif_reminder.png" target="res/drawable-mdpi/notif_reminder.png" />
+	<resource-file src="res/drawable-mdpi/notif_service.png" target="res/drawable-mdpi/notif_service.png" />
+ 	<resource-file src="res/drawable-mdpi-v11/notif_reminder.png" target="res/drawable-mdpi-v11/notif_reminder.png" />
+	<resource-file src="res/drawable-mdpi-v11/notif_service.png" target="res/drawable-mdpi-v11/notif_service.png" />
+ 	<resource-file src="res/drawable-xhdpi/notif_reminder.png" target="res/drawable-xhdpi/notif_reminder.png" />
+	<resource-file src="res/drawable-xhdpi/notif_service.png" target="res/drawable-xhdpi/notif_service.png" />
+ 	<resource-file src="res/drawable-xhdpi-v11/notif_reminder.png" target="res/drawable-xhdpi-v11/notif_reminder.png" />
+	<resource-file src="res/drawable-xhdpi-v11/notif_service.png" target="res/drawable-xhdpi-v11/notif_service.png" />
+ 	<resource-file src="res/drawable-xxhdpi/notif_reminder.png" target="res/drawable-xxhdpi/notif_reminder.png" />
+	<resource-file src="res/drawable-xxhdpi/notif_service.png" target="res/drawable-xxhdpi/notif_service.png" />
+ 	<resource-file src="res/drawable-xxhdpi-v11/notif_reminder.png" target="res/drawable-xxhdpi-v11/notif_reminder.png" />
+	<resource-file src="res/drawable-xxhdpi-v11/notif_service.png" target="res/drawable-xxhdpi-v11/notif_service.png" />
+ 	<resource-file src="res/drawable-xxxhdpi/notif_reminder.png" target="res/drawable-xxxhdpi/notif_reminder.png" />
+	<resource-file src="res/drawable-xxxhdpi/notif_service.png" target="res/drawable-xxxhdpi/notif_service.png" />
+ 	<resource-file src="res/drawable-xxxhdpi-v11/notif_reminder.png" target="res/drawable-xxxhdpi-v11/notif_reminder.png" />
+	<resource-file src="res/drawable-xxxhdpi-v11/notif_service.png" target="res/drawable-xxxhdpi-v11/notif_service.png" />
+
+ 	<resource-file src="res/mipmap-hdpi/logo.png" target="res/mipmap-hdpi/logo.png" />
+	<resource-file src="res/mipmap-mdpi/logo.png" target="res/mipmap-mdpi/logo.png" />
+	<resource-file src="res/mipmap-xhdpi/logo.png" target="res/mipmap-xhdpi/logo.png" />
+	<resource-file src="res/mipmap-xxhdpi/logo.png" target="res/mipmap-xxhdpi/logo.png" />
+	<resource-file src="res/mipmap-xxxhdpi/logo.png" target="res/mipmap-xxxhdpi/logo.png" />
+
+	<resource-file src="res/drawable/selector.xml" target="res/drawable/selector.xml" />
+	<resource-file src="res/layout/notification_service.xml" target="res/layout/notification_service.xml" />
+	<resource-file src="res/values/refs.xml" target="res/values/refs.xml" />
+    </platform>
+</plugin>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="60dp" android:background="@android:drawable/screen_background_dark_transparent"
+                android:clickable="false">
+
+    <ImageView
+            android:id="@+id/imagenotileft"
+            android:layout_width="32dp"
+            android:layout_height="32dp" android:layout_margin="14dp"/>
+
+    <TextView
+            android:id="@+id/title"
+            android:layout_width="fill_parent"
+            android:layout_height="30dp"
+            android:layout_toRightOf="@+id/imagenotileft" android:textSize="16dp"
+            android:gravity="left|bottom" android:textAlignment="gravity"
+            android:textColor="#b5b5b5"/>
+
+    <TextView
+            android:id="@+id/text"
+            android:layout_width="fill_parent"
+            android:layout_height="30dp"
+            android:layout_below="@+id/title"
+            android:layout_toRightOf="@+id/imagenotileft" android:textStyle="normal" android:textSize="14dp"
+            android:gravity="left|center" android:textAlignment="gravity" android:textColor="#ebebeb"/>
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/imageButton" android:background="@drawable/selector" android:clickable="true"/>
+    </RelativeLayout>
+
+</RelativeLayout>
