@@ -24,8 +24,10 @@ package cz.raynet.raynetcrm;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -347,6 +349,8 @@ public class NotificationService extends Service {
                 fLoadedAtLeastOnce = true;
 
                 final JSONArray reminders = response.getJSONArray("data");
+                final Set<String> ids = new HashSet<String>();
+
                 if (reminders != null) {
                     for (int i = 0; i < reminders.length(); i++) {
                         final JSONObject options = reminders.getJSONObject(i);
@@ -363,8 +367,12 @@ public class NotificationService extends Service {
                             existingNotification.cancel();
                             fManager.schedule(options);
                         }
+
+                        ids.add(NotificationService.createNotificationId(potentialNotification.getType(), potentialNotification.getId()));
                     }
                 }
+
+                fManager.cancelAllButIds(ids);
             }
         } catch (JSONException e) {
             Log.e("NotificationService", "performTask", e);

@@ -87,6 +87,17 @@ public class Manager {
         return schedule(options);
     }
 
+    public void cancelAllButIds(Set<String> idsToPreserve) {
+        final Set<String> allIds = getIds();
+        if (allIds != null) {
+            for (String id : allIds) {
+                if (!idsToPreserve.contains(id)) {
+                    cancel(id);
+                }
+            }
+        }
+    }
+
     /**
      * Clear local notification specified by ID.
      *
@@ -247,5 +258,4 @@ public class Manager {
     private NotificationManager getNotMgr() {
         return (NotificationManager) fContext.getSystemService(Context.NOTIFICATION_SERVICE);
     }
-
 }
