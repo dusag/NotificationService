@@ -169,9 +169,22 @@ public class NotificationService extends Service {
         return Service.START_STICKY;
     }
 
+    public static boolean isRequestParamsSet(JSONObject params) throws JSONException {
+        return (params != null) &&
+                (params.getString("checkUrl") != null) &&
+                (params.getString("remindersUrl") != null) &&
+                (params.getString("userName") != null) &&
+                (params.getString("password") != null) &&
+                (params.getString("instanceName") != null) &&
+                (params.getString("locale") != null) &&
+                (params.getString("dateTimeFormat") != null) &&
+                (params.getString("resources") != null);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
+        persist(getSevicePrefs(), NOTIFICATION_SERVICE_ID, null);
         sleepWell();
     }
 
@@ -440,7 +453,11 @@ public class NotificationService extends Service {
     }
 
     private SharedPreferences getSevicePrefs() {
-        return getSharedPreferences(NotificationService.SERV_PREF_KEY, Context.MODE_PRIVATE);
+        return getSevicePrefs(this);
+    }
+
+    public static SharedPreferences getSevicePrefs(Context context) {
+        return context.getSharedPreferences(NotificationService.SERV_PREF_KEY, Context.MODE_PRIVATE);
     }
 
     /**
@@ -451,7 +468,7 @@ public class NotificationService extends Service {
     public static void persist(SharedPreferences prefs, String key, JSONObject data) {
         final SharedPreferences.Editor editor = prefs.edit();
 
-        editor.putString(key, data.toString());
+        editor.putString(key, (data == null) ? null : data.toString());
 
         if (Build.VERSION.SDK_INT < 9) {
             editor.commit();
