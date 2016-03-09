@@ -11,6 +11,10 @@ module.exports = {
 	callbackContext = callbackContext || {};
         cordova.exec(callbackContext.success || null, callbackContext.error || null, "NotificationService", "isActive", []);
     },
+    fetch: function (callbackContext) {
+        callbackContext = callbackContext || {};
+        cordova.exec(callbackContext.success || null, callbackContext.error || null, "NotificationService", "fetch", []);
+    },
     getClicked: function (callbackContext) {
 	callbackContext = callbackContext || {};
         cordova.exec(callbackContext.success || null, callbackContext.error || null, "NotificationService", "getClicked", []);
