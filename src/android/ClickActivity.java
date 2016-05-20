@@ -32,7 +32,11 @@ public class ClickActivity extends Activity {
 
 
             final Context context = getApplicationContext();
-            NotificationService.getInstance().setClickedNotification((data != null) ? new NotificationObj(context, data) : null);
+            if (data != null) {
+                NotificationService.getInstance().setClickedNotification(new NotificationObj(context, data));
+            } else {
+                NotificationService.getInstance().setOpenNotificationList(true);
+            }
             NotificationServiceMain.launchApp(context);
 
         } catch (JSONException e) {

@@ -107,8 +107,19 @@ public class NotificationServiceMain extends CordovaPlugin {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void actionGetClicked(CallbackContext callbackContext) throws JSONException {
         final NotificationService service = NotificationService.getInstance();
-        final NotificationObj clicked = (service == null) ? null : service.getClickedNotification();
-        callbackContext.success((clicked == null) ? new JSONObject() : clicked.getOptions());
+        JSONObject clicked = null;
+        if (service != null) {
+            if (service.getClickedNotification() != null) {
+                clicked = new JSONObject(service.getClickedNotification().getOptions().toString());
+                clicked.put("clicked", "notification");
+            } else if (service.isOpenNotificationList()) {
+                clicked = new JSONObject();
+                clicked.put("clicked", "notificationList");
+            } else {
+                clicked = new JSONObject();
+            }
+        }
+        callbackContext.success(clicked);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -116,6 +127,7 @@ public class NotificationServiceMain extends CordovaPlugin {
         final NotificationService service = NotificationService.getInstance();
         if (service != null) {
             service.resetClickedNotification();
+            service.resetOpenNotificationList();
         }
         callbackContext.success();
     }

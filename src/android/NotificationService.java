@@ -102,6 +102,7 @@ public class NotificationService extends Service {
     private int fRemindersCount = 0;
     private boolean fLoadedAtLeastOnce = false;
     private NotificationObj fClickedNotification;
+    private boolean fOpenNotificationList;
 
     private static NotificationService sInstance = null;
 
@@ -204,6 +205,18 @@ public class NotificationService extends Service {
 
     public void resetClickedNotification() {
         fClickedNotification = null;
+    }
+
+    public boolean isOpenNotificationList() {
+        return fOpenNotificationList;
+    }
+
+    public void setOpenNotificationList(boolean openNotificationList) {
+        fOpenNotificationList = openNotificationList;
+    }
+
+    public void resetOpenNotificationList() {
+        fOpenNotificationList = false;
     }
 
     /**
@@ -404,7 +417,8 @@ public class NotificationService extends Service {
     @SuppressWarnings("deprecation")
     private Notification makeNotification(int remindersNumber) {
         final NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
-        final Intent intent = new Intent(this, ClickActivity.class).setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        final Intent intent = new Intent(this, ClickActivity.class)
+                .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         final PendingIntent contentIntent = PendingIntent.getActivity(
                 this, NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
