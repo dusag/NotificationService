@@ -1,11 +1,15 @@
 module.exports = {
+    start: function (params, callbackContext) {
+	callbackContext = callbackContext || {};
+	cordova.exec(callbackContext.success || null, callbackContext.error || null, "NotificationService", "start", [params]);
+    },
+    updateParams: function (params, callbackContext) {
+	callbackContext = callbackContext || {};
+	cordova.exec(callbackContext.success || null, callbackContext.error || null, "NotificationService", "updateParams", [params]);
+    },
     stop: function (callbackContext) {
         callbackContext = callbackContext || {};
         cordova.exec(callbackContext.success || null, callbackContext.error || null, "NotificationService", "stop", []);
-    },
-    start: function (instanceName, userName, password, locale, dateTimeFormat, checkUrl, remindersUrl, resources, callbackContext) {
-	callbackContext = callbackContext || {};
-	cordova.exec(callbackContext.success || null, callbackContext.error || null, "NotificationService", "start", [instanceName, userName, password, locale, dateTimeFormat, checkUrl, remindersUrl, resources]);
     },
     isActive: function (callbackContext) {
 	callbackContext = callbackContext || {};

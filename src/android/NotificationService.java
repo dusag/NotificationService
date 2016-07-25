@@ -65,6 +65,8 @@ public class NotificationService extends Service {
 
     // Fixed ID for the 'foreground' notification
     private static final int NOTIFICATION_ID = -1;
+    private static final int DEFAULT_TASK_INTERVAL = 30000;
+
     public static final String NOTIFICATION_OPTIONS_ID = "notificationOptions";
     public static final String NOTIFICATION_SERVICE_ID = "notificationService";
     public static final String PREF_KEY = "LocalNotification";
@@ -101,6 +103,7 @@ public class NotificationService extends Service {
 
     private int fRemindersCount = 0;
     private boolean fLoadedAtLeastOnce = false;
+    private int fApiResponseErrorCount = 0;
     private NotificationObj fClickedNotification;
     private boolean fOpenNotificationList;
 
@@ -151,16 +154,8 @@ public class NotificationService extends Service {
                 }
             }
 
-            if (params != null) {
-                fCheckRequestUrl = params.getString("checkUrl");
-                fRemindersRequestUrl = params.getString("remindersUrl");
-                fAuthUserName = params.getString("userName");
-                fAuthPassword = params.getString("password");
-                fAuthInstanceName = params.getString("instanceName");
-                fLocale = params.getString("locale");
-                fDateTimeFormat = params.getString("dateTimeFormat");
-                fResources = params.getJSONObject("resources");
-            }
+            _updateParams(params);
+
         } catch (JSONException e) {
             Log.e("NotificationService", "onStartCommand", e);
         }
@@ -182,6 +177,29 @@ public class NotificationService extends Service {
                 (params.getString("locale") != null) &&
                 (params.getString("dateTimeFormat") != null) &&
                 (params.getString("resources") != null);
+    }
+
+    public void _updateParams(JSONObject params) throws JSONException {
+        if (params != null) {
+            fCheckRequestUrl = params.getString("checkUrl");
+            fRemindersRequestUrl = params.getString("remindersUrl");
+            fAuthUserName = params.getString("userName");
+            fAuthPassword = params.getString("password");
+            fAuthInstanceName = params.getString("instanceName");
+            fLocale = params.getString("locale");
+            fDateTimeFormat = params.getString("dateTimeFormat");
+            fResources = params.getJSONObject("resources");
+
+            fApiResponseErrorCount = 0;
+        }
+    }
+
+    public void updateParams(JSONObject params) {
+        try {
+            _updateParams(params);
+        } catch (JSONException e) {
+            Log.e("NotificationService", "updateParams", e);
+        }
     }
 
     @Override
@@ -224,11 +242,16 @@ public class NotificationService extends Service {
      * by the OS.
      */
     public void keepAwake() {
-        final Handler handler = new Handler();
-
         startForeground(NOTIFICATION_ID, makeNotification(fRemindersCount));
 
-        fKeepAliveTask = new TimerTask() {
+        fKeepAliveTask = createTimerTask();
+        fScheduler.schedule(fKeepAliveTask, 0, DEFAULT_TASK_INTERVAL);
+    }
+
+    private TimerTask createTimerTask() {
+        final Handler handler = new Handler();
+
+        return new TimerTask() {
             @Override
             public void run() {
                 handler.post(new Runnable() {
@@ -239,8 +262,6 @@ public class NotificationService extends Service {
                 });
             }
         };
-
-        fScheduler.schedule(fKeepAliveTask, 0, 30000);
     }
 
     /**
@@ -250,10 +271,11 @@ public class NotificationService extends Service {
         stopForeground(true);
         fKeepAliveTask.cancel();
         fKeepAliveTask = null;
+        fScheduler.cancel();
     }
 
     private void performCheck() {
-        if (fRequestQueue == null) {
+        if (fRequestQueue == null || fApiResponseErrorCount > 10) {
             return;
         }
 
@@ -264,6 +286,7 @@ public class NotificationService extends Service {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        fApiResponseErrorCount = 0;
                         try {
                             if (!fLoadedAtLeastOnce || response.getBoolean("userHasNewReminder")) {
                                 performTask();
@@ -279,6 +302,11 @@ public class NotificationService extends Service {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e("NotificationService", "performCheck", error);
+
+                        if (error != null && error.networkResponse != null &&
+                                (error.networkResponse.statusCode == 401 || error.networkResponse.statusCode == 404 || error.networkResponse.statusCode == 500)) {
+                            fApiResponseErrorCount++;
+                        }
                     }
                 }
         ) {

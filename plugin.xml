@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cz.raynet.raynetcrm.NotificationService"
-        version="0.0.4">
+        version="0.0.5">
 
     <name>NotificationService</name>
     <description>Notification service phonegap plugin. Can fetch user activity reminders from server and show them via notification.</description>
@@ -19,7 +19,7 @@
     </js-module>
 
     <!-- ios -->
-    
+
     <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
@@ -57,7 +57,7 @@
         <lib-file src="libs/android/android-support-v4.jar" />
 	<lib-file src="libs/android/volley-1.0.19.jar" />
 
-        <source-file src="src/android/NotificationServiceMain.java" target-dir="src/cz/raynet/raynetcrm" />        
+        <source-file src="src/android/NotificationServiceMain.java" target-dir="src/cz/raynet/raynetcrm" />
 	<source-file src="src/android/BootCompletedReceiver.java" target-dir="src/cz/raynet/raynetcrm" />
         <source-file src="src/android/Manager.java" target-dir="src/cz/raynet/raynetcrm" />
         <source-file src="src/android/NotificationObj.java" target-dir="src/cz/raynet/raynetcrm" />

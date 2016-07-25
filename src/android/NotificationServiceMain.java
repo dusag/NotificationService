@@ -16,6 +16,7 @@ import org.json.JSONObject;
 public class NotificationServiceMain extends CordovaPlugin {
 
     private static final String ACTION_START = "start";
+    private static final String ACTION_UPDATE_PARAMS = "updateParams";
     private static final String ACTION_STOP = "stop";
     private static final String ACTION_FETCH = "fetch";
     private static final String ACTION_IS_ACTIVE = "isActive";
@@ -27,8 +28,10 @@ public class NotificationServiceMain extends CordovaPlugin {
 
         try {
             if (action.equals(ACTION_START)) {
-                actionStart(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4),
-                        args.getString(5), args.getString(6), args.getJSONObject(7), callbackContext);
+                actionStart(args.getJSONObject(0), callbackContext);
+                return true;
+            } else if (action.equals(ACTION_UPDATE_PARAMS)) {
+                actionUpdateParams(args.getJSONObject(0), callbackContext);
                 return true;
             } else if (action.equals(ACTION_STOP)) {
                 actionStop(callbackContext);
@@ -57,24 +60,23 @@ public class NotificationServiceMain extends CordovaPlugin {
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private void actionStart(String instanceName, String userName, String password, String locale, String dateTimeFormat,
-                             String checkUrl, String remindersUrl, JSONObject resources, CallbackContext callbackContext) throws JSONException {
+    private void actionStart(JSONObject params, CallbackContext callbackContext) throws JSONException {
         final Activity activity = cordova.getActivity();
         final Intent intent = new Intent(activity, NotificationService.class);
-
-        final JSONObject params = new JSONObject();
-        params.put("instanceName", instanceName);
-        params.put("userName", userName);
-        params.put("password", password);
-        params.put("locale", locale);
-        params.put("dateTimeFormat", dateTimeFormat);
-        params.put("checkUrl", checkUrl);
-        params.put("remindersUrl", remindersUrl);
-        params.put("resources", resources);
 
         intent.putExtra("params", params.toString());
 
         activity.startService(intent);
+        callbackContext.success();
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void actionUpdateParams(JSONObject params, CallbackContext callbackContext) throws JSONException {
+        final NotificationService service = NotificationService.getInstance();
+        if (service != null) {
+            service.updateParams(params);
+        }
+
         callbackContext.success();
     }
 
