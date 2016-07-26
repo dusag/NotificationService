@@ -83,6 +83,8 @@ public class NotificationService extends Service {
     public static final String RES_NOTIF_BIG_ICON_KEY = "RES_NOTIF_BIG_ICON";
     public static final String RES_NOTIF_SMALL_ICON_KEY = "RES_NOTIF_SMALL_ICON";
 
+    private static int sApiResponseErrorCount = 0;
+
     private String fCheckRequestUrl;
     private String fRemindersRequestUrl;
     private String fAuthUserName;
@@ -103,7 +105,6 @@ public class NotificationService extends Service {
 
     private int fRemindersCount = 0;
     private boolean fLoadedAtLeastOnce = false;
-    private int fApiResponseErrorCount = 0;
     private NotificationObj fClickedNotification;
     private boolean fOpenNotificationList;
 
@@ -137,6 +138,8 @@ public class NotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
+
+        sApiResponseErrorCount = 0;
 
         try {
             final JSONObject params;
@@ -190,7 +193,7 @@ public class NotificationService extends Service {
             fDateTimeFormat = params.getString("dateTimeFormat");
             fResources = params.getJSONObject("resources");
 
-            fApiResponseErrorCount = 0;
+            sApiResponseErrorCount = 0;
         }
     }
 
@@ -268,6 +271,7 @@ public class NotificationService extends Service {
      * Stop background mode.
      */
     private void sleepWell() {
+        sApiResponseErrorCount = 0;
         stopForeground(true);
         fKeepAliveTask.cancel();
         fKeepAliveTask = null;
@@ -275,7 +279,7 @@ public class NotificationService extends Service {
     }
 
     private void performCheck() {
-        if (fRequestQueue == null || fApiResponseErrorCount > 10) {
+        if (fRequestQueue == null || sApiResponseErrorCount > 10) {
             return;
         }
 
@@ -286,7 +290,7 @@ public class NotificationService extends Service {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        fApiResponseErrorCount = 0;
+                        sApiResponseErrorCount = 0;
                         try {
                             if (!fLoadedAtLeastOnce || response.getBoolean("userHasNewReminder")) {
                                 performTask();
@@ -304,8 +308,8 @@ public class NotificationService extends Service {
                         Log.e("NotificationService", "performCheck", error);
 
                         if (error != null && error.networkResponse != null &&
-                                (error.networkResponse.statusCode == 401 || error.networkResponse.statusCode == 404 || error.networkResponse.statusCode == 500)) {
-                            fApiResponseErrorCount++;
+                                (error.networkResponse.statusCode == 401 || error.networkResponse.statusCode == 404)) {
+                            sApiResponseErrorCount++;
                         }
                     }
                 }
