@@ -34,7 +34,7 @@ public class TriggerReceiver extends BroadcastReceiver {
      * Called when a local notification was triggered.
      */
     public void onTrigger (NotificationObj notificationObj) {
-        if (notificationObj != null) {
+        if (notificationObj != null && NotificationService.getInstance() != null) {
             notificationObj.show();
             NotificationService.getInstance().recountScheduled();
         }

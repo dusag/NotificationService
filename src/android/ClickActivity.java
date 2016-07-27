@@ -31,13 +31,15 @@ public class ClickActivity extends Activity {
             final JSONObject data = (bundle == null) ? null : new JSONObject(bundle.getString(NotificationService.NOTIFICATION_OPTIONS_ID));
 
 
-            final Context context = getApplicationContext();
-            if (data != null) {
-                NotificationService.getInstance().setClickedNotification(new NotificationObj(context, data));
-            } else {
-                NotificationService.getInstance().setOpenNotificationList(true);
+            if (NotificationService.getInstance() != null) {
+                final Context context = getApplicationContext();
+                if (data != null) {
+                    NotificationService.getInstance().setClickedNotification(new NotificationObj(context, data));
+                } else {
+                    NotificationService.getInstance().setOpenNotificationList(true);
+                }
+                NotificationServiceMain.launchApp(context);
             }
-            NotificationServiceMain.launchApp(context);
 
         } catch (JSONException e) {
             Log.e("ClickActivity", "onCreate", e);

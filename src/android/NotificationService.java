@@ -84,6 +84,7 @@ public class NotificationService extends Service {
     public static final String RES_NOTIF_SMALL_ICON_KEY = "RES_NOTIF_SMALL_ICON";
 
     private static int sApiResponseErrorCount = 0;
+    private static NotificationService sInstance = null;
 
     private String fCheckRequestUrl;
     private String fRemindersRequestUrl;
@@ -95,7 +96,7 @@ public class NotificationService extends Service {
     private JSONObject fResources;
 
     // Scheduler to exec periodic tasks
-    private final Timer fScheduler = new Timer();
+    private Timer fScheduler = new Timer();
     private final Manager fManager = new Manager(this);
     private final AssetUtil fAssets =  AssetUtil.getInstance(this);
 
@@ -107,8 +108,6 @@ public class NotificationService extends Service {
     private boolean fLoadedAtLeastOnce = false;
     private NotificationObj fClickedNotification;
     private boolean fOpenNotificationList;
-
-    private static NotificationService sInstance = null;
 
     /**
      * Static instance (singleton)
@@ -144,10 +143,12 @@ public class NotificationService extends Service {
         try {
             final JSONObject params;
             if (intent != null && intent.getStringExtra("params") != null) {
+                Log.e("NotificationService", intent.getStringExtra("params"));
                 params = new JSONObject(intent.getStringExtra("params"));
                 persist(getSevicePrefs(), NOTIFICATION_SERVICE_ID, params);
             } else {
                 params = getPersisted(getSevicePrefs(), NOTIFICATION_SERVICE_ID);
+                Log.e("NotificationService", params == null ? null : params.toString());
                 fRemindersCount = fManager.getAll().size();
 
                 for (NotificationObj notification : fManager.getAll()) {
@@ -208,8 +209,10 @@ public class NotificationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        fManager.clearAll();
         persist(getSevicePrefs(), NOTIFICATION_SERVICE_ID, null);
         sleepWell();
+        sInstance = null;
     }
 
     public boolean isRunning() {
@@ -247,6 +250,12 @@ public class NotificationService extends Service {
     public void keepAwake() {
         startForeground(NOTIFICATION_ID, makeNotification(fRemindersCount));
 
+        if (fKeepAliveTask != null) {
+            fKeepAliveTask.cancel();
+            fScheduler.cancel();
+            fScheduler = new Timer();
+        }
+
         fKeepAliveTask = createTimerTask();
         fScheduler.schedule(fKeepAliveTask, 0, DEFAULT_TASK_INTERVAL);
     }
@@ -279,7 +288,7 @@ public class NotificationService extends Service {
     }
 
     private void performCheck() {
-        if (fRequestQueue == null || sApiResponseErrorCount > 10) {
+        if (fKeepAliveTask == null || fRequestQueue == null || sApiResponseErrorCount > 10) {
             return;
         }
 

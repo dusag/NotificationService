@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CordovaPlugin;
@@ -61,12 +62,20 @@ public class NotificationServiceMain extends CordovaPlugin {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void actionStart(JSONObject params, CallbackContext callbackContext) throws JSONException {
-        final Activity activity = cordova.getActivity();
-        final Intent intent = new Intent(activity, NotificationService.class);
+        final NotificationService service = NotificationService.getInstance();
 
-        intent.putExtra("params", params.toString());
+        if (service != null) {
+            service.updateParams(params);
+            service.keepAwake();
+        } else {
+            final Activity activity = cordova.getActivity();
+            final Intent intent = new Intent(activity, NotificationService.class);
 
-        activity.startService(intent);
+            intent.putExtra("params", params.toString());
+
+            activity.startService(intent);
+        }
+
         callbackContext.success();
     }
 
