@@ -1,0 +1,31 @@
+{
+  "name": "cz.raynet.raynetcrm.NotificationService",
+  "version": "0.0.8",
+  "description": "Notification service phonegap plugin. Can fetch user activity reminders from server and show them via notification.",
+  "cordova": {
+    "id": "cz.raynet.raynetcrm.NotificationService",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dusag/NotificationService.git"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-ios"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=2.8.0"
+    }
+  ],
+  "author": "Dusan Galik",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dusag/NotificationService/issues"
+  },
+  "homepage": "https://github.com/dusag/NotificationService#readme"
+}

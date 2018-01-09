@@ -7,6 +7,9 @@
 
     <name>NotificationService</name>
     <description>Notification service phonegap plugin. Can fetch user activity reminders from server and show them via notification.</description>
+    <author>Dusan Galik</author>
+    <repo>https://github.com/dusag/NotificationService.git</repo>
+    <issue>https://github.com/dusag/NotificationService/issues</issue>
 
     <!-- cordova -->
     <engines>
